@@ -132,10 +132,6 @@ def index():
     # get this user's entries and 
     list = db.execute('SELECT * FROM notes WHERE user_id = ? ORDER BY time DESC', session['user_id'])
     # sort them in time order: urgent->entry->done
-        # sorting problem:
-        # 1. ASC list: both done and entry must be ordered
-        # 2. DESC list: only urgent needs to be ordered
-
     urgents = []
     entries = []
     dones = []
@@ -146,13 +142,11 @@ def index():
         if dict['tag'] == 'entry':
             entries.append(dict)
         if dict['tag'] == 'done':
-            dones.appned(dict)
-            
+            dones.appned(dict)      
     lists[len(lists):] = urgents
     lists[len(lists):] = entries
     lists[len(lists):] = dones
 
-    
     return render_template('index.html', list=lists)
 
 
