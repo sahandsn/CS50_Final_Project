@@ -6,12 +6,20 @@ from flask_session import Session
 from tempfile import mkdtemp
 from werkzeug.security import check_password_hash, generate_password_hash
 from itertools import zip_longest
-from flask_login import login_required
+from flask_login import login_required, current_user
 from functools import wraps
 
 # Configure application
 app = Flask(__name__)
-app.secret_key = 'sanaeisahand'
+app.secret_key = '*,sanaei#9,#sahand%,!is@,here$?/,2001;'
+
+# Ensure templates are auto-reloaded
+app.config["TEMPLATES_AUTO_RELOAD"] = True
+
+# Configure session to use filesystem (instead of signed cookies)
+app.config["SESSION_PERMANENT"] = False
+app.config["SESSION_TYPE"] = "filesystem"
+Session(app)
 
 # Config login decorator
 def login_required(f):
@@ -26,19 +34,13 @@ def login_required(f):
        return f(*args, **kwargs)
    return decorated_function
 
-
-# Ensure templates are auto-reloaded
-app.config["TEMPLATES_AUTO_RELOAD"] = True
-
-
-# Configure session to use filesystem (instead of signed cookies)
-app.config["SESSION_PERMANENT"] = False
-app.config["SESSION_TYPE"] = "filesystem"
-Session(app)
-
-
 # Configure CS50 Library to use SQLite database
 db = SQL("sqlite:///database.db")
+
+# Different routes
+@app.route("/error")
+def error(message):
+    return render_template('error.html', message=message)
 
 @app.route("/register", methods=["GET", "POST"])
 def register():
@@ -49,13 +51,13 @@ def register():
 
         # check for errors
         if not username or username == '':
-            return render_template("error.html")
+            return error("enter username")
         if not request.form.get('password') or request.form.get('password') == '':
-            return render_template("error.html")
+            return error("enter password")
         if not request.form.get('confirmation') or request.form.get('confirmation') == '':
-            return render_template("error.html")
+            return error("password not confirmed")
         if not request.form.get('confirmation') == request.form.get('password'):
-            return render_template("error.html")
+            return error("password not confirmed")
 
         # check if the username is taken
         names = db.execute('SELECT username FROM users')
@@ -63,7 +65,7 @@ def register():
         for dict in names:
             for val in dict.values():
                 if val == username:
-                    return render_template("error.html")
+                    return error("username is taken")
 
         # hash the password
         hashed = generate_password_hash(request.form.get('password'))
@@ -89,18 +91,18 @@ def login():
 
         # Ensure username was submitted
         if not request.form.get("username"):
-            return render_template("error.html")
+            return error("enter username")
 
         # Ensure password was submitted
-        elif not request.form.get("password"):
-            return render_template("error.html")
+        if not request.form.get("password"):
+            return error("enter password")
 
         # Query database for username
         rows = db.execute("SELECT * FROM users WHERE username = ?", request.form.get("username"))
 
         # Ensure username exists and password is correct
         if len(rows) != 1 or not check_password_hash(rows[0]["hash"], request.form.get("password")):
-            return render_template("error.html")
+            return error("password not confirmed")
 
         # Remember which user has logged in
         session["user_id"] = rows[0]["id"]
@@ -127,4 +129,45 @@ def logout():
 @app.route("/")
 @login_required
 def index():
-    return render_template('todo.html')
+    # get this user's entries and 
+    list = db.execute('SELECT * FROM notes WHERE user_id = ? ORDER BY time DESC', session['user_id'])
+    # sort them in time order: urgent->entry->done
+        # sorting problem:
+        # 1. ASC list: both done and entry must be ordered
+        # 2. DESC list: only urgent needs to be ordered
+
+    urgents = []
+    entries = []
+    dones = []
+    lists = []
+    for dict in list:
+        if dict['tag'] == 'urgent':
+            urgents.append(dict)
+        if dict['tag'] == 'entry':
+            entries.append(dict)
+        if dict['tag'] == 'done':
+            dones.appned(dict)
+            
+    lists[len(lists):] = urgents
+    lists[len(lists):] = entries
+    lists[len(lists):] = dones
+
+    
+    return render_template('index.html', list=lists)
+
+
+@app.route('/entry', methods=['POST', 'GET'])
+@login_required
+def entry():
+    if request.method == 'POST':
+        # if the tag is not defined
+        if request.form.get('tag') not in ['urgent', 'entry']:
+            return error('invalid entry')
+        # insert the new entry in the notes table
+        db.execute("INSERT INTO notes (user_id, head, body, tag) VALUES (?,?,?,?)", session["user_id"], request.form.get('head'), request.form.get('body'), request.form.get('tag'))
+        return redirect('/')
+    else:
+        return render_template('entry.html')
+
+
+

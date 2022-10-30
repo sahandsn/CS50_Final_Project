@@ -1,0 +1,31 @@
+{% extends 'layout.html' %}
+
+{% block title %}
+    Login
+{% endblock %}
+
+{% block main %}
+<form action="/entry" method="get">
+    <button type="submit">New Entry</button>
+</form>
+<table>
+    <thead>
+        <tr>
+            <th>Time</th>
+            <th>Head</th>
+            <th>Body</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for dict in list%}
+            <tr>
+                <td>{{dict['time']}}</td>
+                <td>{{dict['head']}}</td>
+                <td>{{dict['body']}}</td>
+            </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+
+{% endblock %}
