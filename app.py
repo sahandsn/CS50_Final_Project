@@ -1,4 +1,5 @@
 import os
+from xml.dom import UserDataHandler
 
 from cs50 import SQL
 from flask import Flask, flash, redirect, render_template, request, session
@@ -134,7 +135,7 @@ def index():
     # sort them in time order: urgent->entry->done
     urgents = []
     entries = []
-    dones = []
+    used = []
     lists = []
     for dict in list:
         if dict['tag'] == 'urgent':
@@ -142,10 +143,10 @@ def index():
         if dict['tag'] == 'entry':
             entries.append(dict)
         if dict['tag'] == 'done':
-            dones.appned(dict)      
+            used.append(dict)    
     lists[len(lists):] = urgents
     lists[len(lists):] = entries
-    lists[len(lists):] = dones
+    lists[len(lists):] = used
 
     return render_template('index.html', list=lists)
 
@@ -181,3 +182,25 @@ def check():
     return render_template('check.html', list=list)
 
 
+@app.route('/urgentTag', methods=['post'])
+@login_required
+def urgent():
+    id = request.form.get('urgent')
+    db.execute('UPDATE notes SET tag = "urgent" WHERE id = ?', id)
+    return redirect('/')
+
+
+@app.route('/doneTag', methods=['post'])
+@login_required
+def done():
+    id = request.form.get('done')
+    db.execute('UPDATE notes SET tag = "done" WHERE id = ?', id)
+    return redirect('/')
+
+
+@app.route('/entryTag', methods=['post'])
+@login_required
+def entrytag():
+    id = request.form.get('entry')
+    db.execute('UPDATE notes SET tag = "entry" WHERE id = ?', id)
+    return redirect('/')
