@@ -164,4 +164,20 @@ def entry():
         return render_template('entry.html')
 
 
+@app.route('/delete', methods=['post'])
+@login_required
+def delete():
+
+    id = request.form.get('delete')
+    db.execute('DELETE FROM notes WHERE id = ?', id)
+    return redirect('/')
+
+
+@app.route('/check', methods=['POST'])
+@login_required
+def check():
+
+    list = db.execute('SELECT * FROM notes WHERE id = ?', request.form.get('delete')) 
+    return render_template('check.html', list=list)
+
 

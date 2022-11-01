@@ -1,0 +1,19 @@
+{% extends 'layout.html' %}
+
+{% block title %}
+    Delete
+{% endblock %}
+
+{% block main %}
+<h1>Warning!</h1>
+<h3>once deleted, there is no going back.</h3>
+<br>
+{% for dict in list%}
+<h3>Are you sure you want to delete {{dict['head']}}?</h3>
+<form action="/delete" method="post"><button type="submit" name='delete' value="{{dict['id']}}">Yes</button></form>
+<form action="/" ><button type="submit">No</button></form>
+
+<p>{{dict['time']}}</p>
+<p>{{dict['body']}}</p>
+{% endfor %}
+{% endblock %}
