@@ -7,14 +7,17 @@
 {% block main %}
     <form action="/register" method="post">
         <div >
-            <input autocomplete="off" autofocus name="username" placeholder="Username" type="text">
+            <input autocomplete="off" autofocus name="username" placeholder="Username" type="text" required>
         </div>
         <div >
-            <input id="password" name="password" placeholder="Password" type="password">
+            <input id="password" name="password" placeholder="Password" type="password" required>
         </div>
         <div >
-            <input id="confirmPassword" name="confirmation" placeholder="Confirm Password" type="password">
+            <input id="confirmPassword" name="confirmation" placeholder="Confirm Password" type="password" required>
         </div>
-        <button type="submit" >Register</button>
+        <div >
+            <input id="email" name="email" placeholder="Email" type="email" autocomplete="off" required>
+        </div>
+        <button type="submit" class="btn btn-primary">Register</button>
     </form>
 {% endblock %}

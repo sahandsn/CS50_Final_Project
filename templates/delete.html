@@ -10,8 +10,9 @@
 <br>
 {% for dict in list%}
 <h3>Are you sure you want to delete {{dict['head']}}?</h3>
-<form action="/delete" method="post"><button type="submit" name='delete' value="{{dict['id']}}">Yes</button></form>
-<form action="/" ><button type="submit">No</button></form>
+<form action="/validate" method="post"><button type="submit" name='delete' value="{{dict['id']}}" class="btn btn-primary">Yes</button></form>
+<form action="/" ><button type="submit" class="btn btn-danger">No</button></form>
+
 
 <p>{{dict['time']}}</p>
 <p>{{dict['body']}}</p>

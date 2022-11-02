@@ -9,6 +9,7 @@ from werkzeug.security import check_password_hash, generate_password_hash
 from itertools import zip_longest
 from flask_login import login_required, current_user
 from functools import wraps
+from flask_mail import Mail, Message
 
 # Configure application
 app = Flask(__name__)
@@ -21,6 +22,16 @@ app.config["TEMPLATES_AUTO_RELOAD"] = True
 app.config["SESSION_PERMANENT"] = False
 app.config["SESSION_TYPE"] = "filesystem"
 Session(app)
+
+# Config Email
+app.config["MAIL_PASSWORD"] = "hvlzzcohwfbcvcoj"
+app.config["MAIL_PORT"] = 465
+app.config["MAIL_SERVER"] = "smtp.gmail.com"
+app.config["MAIL_USE_TLS"] = False
+app.config["MAIL_USE_SSL"] = True
+app.config["MAIL_USERNAME"] = "YourListsAndNotesApp@gmail.com"
+
+mail = Mail(app)
 
 # Config login decorator
 def login_required(f):
@@ -40,8 +51,8 @@ db = SQL("sqlite:///database.db")
 
 # Different routes
 @app.route("/error")
-def error(message):
-    return render_template('error.html', message=message)
+def error(message, code=400):
+    return render_template('error.html', message=message), code
 
 @app.route("/register", methods=["GET", "POST"])
 def register():
@@ -49,8 +60,11 @@ def register():
     if request.method == 'POST':
         # DO NOT SAVE PASSWORD
         username = request.form.get('username')
+        email = request.form.get('email')
 
         # check for errors
+        if email == '':
+            return error('enter email')
         if not username or username == '':
             return error("enter username")
         if not request.form.get('password') or request.form.get('password') == '':
@@ -59,7 +73,11 @@ def register():
             return error("password not confirmed")
         if not request.form.get('confirmation') == request.form.get('password'):
             return error("password not confirmed")
-
+        emails = db.execute("SELECT email FROM users")
+        for dict in emails:
+            if dict['email'] == email:
+                return error("use a new email.")
+        
         # check if the username is taken
         names = db.execute('SELECT username FROM users')
 
@@ -72,7 +90,11 @@ def register():
         hashed = generate_password_hash(request.form.get('password'))
 
         # add user to the database
-        db.execute('INSERT INTO users (username, hash) VALUES(?, ?)', username, hashed)
+        db.execute('INSERT INTO users (username, hash, email) VALUES(?, ?, ?)', username, hashed, email)
+        
+        msg = Message("YourList", sender = 'noreply@demo.com', recipients=[email])
+        msg.body = "Welcome to your ultimate List app online!"
+        mail.send(msg)
 
         return render_template('login.html')
 
@@ -160,26 +182,49 @@ def entry():
             return error('invalid entry')
         # insert the new entry in the notes table
         db.execute("INSERT INTO notes (user_id, head, body, tag) VALUES (?,?,?,?)", session["user_id"], request.form.get('head'), request.form.get('body'), request.form.get('tag'))
+        email = db.execute("SELECT email FROM users WHERE id = ?", session["user_id"])
+        if email[0]['email'] == '':
+            return redirect('/')
+        msg = Message("YourList", sender = 'noreply@demo.com', recipients=[email[0]['email']])
+        msg.body = "An entry has been added."
+        mail.send(msg)
         return redirect('/')
     else:
         return render_template('entry.html')
 
 
-@app.route('/delete', methods=['post'])
+@app.route('/validate', methods=['post'])
+@login_required
+def validate():
+    id = request.form.get('delete')
+    return render_template('validate.html', id=id)
+
+
+
+@app.route('/deleted', methods=['post'])
+@login_required
+def deleted():
+    hash = db.execute('SELECT hash FROM users WHERE id = ?', session["user_id"])
+    if check_password_hash(hash[0]['hash'] , request.form.get('password')) == True:
+        id = request.form.get('delete')
+        db.execute('DELETE FROM notes WHERE id = ?', id)
+        email = db.execute("SELECT email FROM users WHERE id = ?", session["user_id"])
+        if email[0]['email'] == '':
+            return redirect('/')
+        msg = Message("YourList", sender = 'noreply@demo.com', recipients=[email[0]['email']])
+        msg.body = "An entry has been deleted."
+        mail.send(msg)
+        return redirect('/')
+    else:
+        return error("password was wrong.")
+
+
+@app.route('/delete', methods=['POST'])
 @login_required
 def delete():
 
-    id = request.form.get('delete')
-    db.execute('DELETE FROM notes WHERE id = ?', id)
-    return redirect('/')
-
-
-@app.route('/check', methods=['POST'])
-@login_required
-def check():
-
     list = db.execute('SELECT * FROM notes WHERE id = ?', request.form.get('delete')) 
-    return render_template('check.html', list=list)
+    return render_template('delete.html', list=list)
 
 
 @app.route('/urgentTag', methods=['post'])
@@ -204,3 +249,5 @@ def entrytag():
     id = request.form.get('entry')
     db.execute('UPDATE notes SET tag = "entry" WHERE id = ?', id)
     return redirect('/')
+
+
