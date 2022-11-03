@@ -1,5 +1,4 @@
 import os
-from xml.dom import UserDataHandler
 
 from cs50 import SQL
 from flask import Flask, flash, redirect, render_template, request, session
@@ -54,6 +53,7 @@ db = SQL("sqlite:///tables.db")
 def error(message, code=400):
     return render_template('error.html', message=message), code
 
+
 @app.route("/register", methods=["GET", "POST"])
 def register():
     """Register user"""
@@ -98,8 +98,8 @@ def register():
         msg = Message("YourList", sender = 'noreply@demo.com', recipients=[email])
         msg.body = "Welcome to your ultimate List app online!"
         mail.send(msg)
-
-        return render_template('login.html')
+        session["user_id"] = db.execute("SELECT * FROM users WHERE username = ?", request.form.get("username"))[0]['id']
+        return redirect('/')
 
     if request.method == 'GET':
         return render_template("register.html")
@@ -128,7 +128,7 @@ def login():
 
         # Ensure username exists and password is correct
         if len(rows) != 1 or not check_password_hash(rows[0]["hash"], request.form.get("password")):
-            return error("user not confirmed.")
+            return error("user not found.")
 
         # Remember which user has logged in
         session["user_id"] = rows[0]["id"]
@@ -194,6 +194,7 @@ def entry():
         return redirect('/')
     else:
         return render_template('entry.html')
+
 
 @app.route('/delete', methods=['POST'])
 @login_required
