@@ -47,7 +47,7 @@ def login_required(f):
    return decorated_function
 
 # Configure CS50 Library to use SQLite database
-db = SQL("sqlite:///database.db")
+db = SQL("sqlite:///tables.db")
 
 # Different routes
 @app.route("/error")
@@ -89,8 +89,11 @@ def register():
         # hash the password
         hashed = generate_password_hash(request.form.get('password'))
 
-        # add user to the database
-        db.execute('INSERT INTO users (username, hash, email) VALUES(?, ?, ?)', username, hashed, email)
+        try:
+            # add user to the database
+            db.execute('INSERT INTO users (username, hash, email) VALUES(?, ?, ?)', username, hashed, email)
+        except:
+            return error("something went wrong.")
         
         msg = Message("YourList", sender = 'noreply@demo.com', recipients=[email])
         msg.body = "Welcome to your ultimate List app online!"
@@ -125,7 +128,7 @@ def login():
 
         # Ensure username exists and password is correct
         if len(rows) != 1 or not check_password_hash(rows[0]["hash"], request.form.get("password")):
-            return error("password not confirmed")
+            return error("user not confirmed.")
 
         # Remember which user has logged in
         session["user_id"] = rows[0]["id"]
@@ -192,15 +195,22 @@ def entry():
     else:
         return render_template('entry.html')
 
+@app.route('/delete', methods=['POST'])
+@login_required
+def delete():
 
-@app.route('/validate', methods=['post'])
+    list = db.execute('SELECT * FROM notes WHERE id = ?', request.form.get('delete')) 
+    return render_template('delete.html', list=list)
+
+
+@app.route('/validate deletion', methods=['post'])
 @login_required
 def validate():
+
     id = request.form.get('delete')
     return render_template('validate.html', id=id)
-
-
-
+    
+    
 @app.route('/deleted', methods=['post'])
 @login_required
 def deleted():
@@ -217,14 +227,6 @@ def deleted():
         return redirect('/')
     else:
         return error("password was wrong.")
-
-
-@app.route('/delete', methods=['POST'])
-@login_required
-def delete():
-
-    list = db.execute('SELECT * FROM notes WHERE id = ?', request.form.get('delete')) 
-    return render_template('delete.html', list=list)
 
 
 @app.route('/urgentTag', methods=['post'])
@@ -249,5 +251,39 @@ def entrytag():
     id = request.form.get('entry')
     db.execute('UPDATE notes SET tag = "entry" WHERE id = ?', id)
     return redirect('/')
+
+
+@app.route("/email")
+@login_required
+def email():
+    return render_template("email.html")
+
+
+@app.route('/validate email', methods=['post'])
+@login_required
+def validateEmail():
+    old = request.form.get("previousEmail")
+    new = request.form.get("newEmail")
+    check = db.execute("SELECT email FROM users WHERE id = ?", session['user_id'])[0]['email']
+    if old == check:
+        return render_template("validateEmail.html", old=old, new=new)
+    else:
+        return error("This is not your current email address.")
+
+
+@app.route('/email change', methods=['post'])
+@login_required
+def changeEmail():
+    hash = db.execute('SELECT hash FROM users WHERE id = ?', session["user_id"])
+    if check_password_hash(hash[0]['hash'] , request.form.get('password')) == True:
+        old = request.form.get("old")
+        new = request.form.get("new")
+        try:
+            db.execute("UPDATE users SET email = ? WHERE id = ?", new, session['user_id'])
+        except:
+            return error("something went wrong.")
+        return redirect('/')
+    else:
+        return error("password was wrong.")
 
 

@@ -1,0 +1,14 @@
+{% extends 'layout.html' %}
+
+{% block title %}
+    Email
+{% endblock %}
+
+{% block main %}
+    <h2>Chang your email address.</h2>
+    <form action="/validate email" method="post">
+        <input type="email" autofocus autocomplete="off" name="previousEmail" placeholder="Current Email">
+        <input type="email" autofocus autocomplete="off" name="newEmail" placeholder="New Email">
+        <button type="submt" class="btn btn-primary">Change</button>
+    </form>
+{% endblock %}

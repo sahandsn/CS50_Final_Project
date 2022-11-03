@@ -1,0 +1,14 @@
+{% extends 'layout.html' %}
+
+{% block title %}
+    Validate
+{% endblock %}
+
+{% block main %}
+    <h2> Prove it is you!</h2>
+    <form action="/email change" method="post"><input type="password" name="password" placeholder="Password" autocomplete="off" autofocus>
+        <input type="hidden" value="{{old}}" name="old">
+        <input type="hidden" value="{{new}}" name="new">
+        <button type="submit" class="btn btn-primary">It is me</button>
+     </form>
+{% endblock %}
