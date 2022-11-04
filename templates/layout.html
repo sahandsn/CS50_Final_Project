@@ -13,6 +13,8 @@
         <link rel="icon" type="image/x-icon" href="/static/favicon.ico">
         <!--add a styling sheet-->
         <link rel="stylesheet" href="/static/css/style.css">
+        <!--use google fonts-->
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Audiowide|Sofia|Trirong">
         
         <title>YourList: {% block title %}{% endblock %}</title>
     </head>
@@ -22,18 +24,20 @@
                     
                     <ul>
                         <li><a href="/"><img src="/static/icon.png"height="100" width="100"></a></li>
-                    </ul>
+                    
                     {% if session["user_id"] %}
-                        <ul>
+                        
                             <li><a href="/logout">Log out</a></li>
                             <li><a href="/email">Email</a></li>
-                        </ul>
+                            <li><a href="/customize">Customize</a></li>
+                        
                     {% else %}
-                        <ul>
+                        
                             <li><a href="/register">Register</a></li>
                             <li><a href="/login">Log In</a></li>
-                        </ul>
+                        
                     {% endif %}
+                    </ul>
                 </div>
             </div>
         <main>

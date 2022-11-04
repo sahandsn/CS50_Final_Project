@@ -1,0 +1,21 @@
+{% extends 'layout.html' %}
+
+{% block title %}
+    Customize
+{% endblock %}
+
+{% block main %}
+<form action="/customize" method="post">
+    <h2>Font Style:</h2>
+    {% for font in fonts%}
+    <input type="radio" name="font" value="{{font}}"><label class="{{font}}">which font is better?</label><br>
+    {% endfor %}
+    <br>
+    <h2>Font Size:</h2>
+    {% for size in size%}
+    <input type="radio" name="size" value="{{size}}"><label class="{{size}}">how big/small do you like it?</label><br>
+    {% endfor %}
+
+</form>
+
+{% endblock %}

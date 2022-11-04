@@ -34,3 +34,47 @@
   .dropdown:hover .dropdown-content {display: block;}
   
   .dropdown:hover .dropbtn {background-color: #3e8e41;}
+
+li {
+    display: inline;
+}
+
+.sans-serif{
+  font-family: sans-serif;
+}
+.serif{
+  font-family: serif;
+}
+.monospace{
+  font-family: monospace;
+}
+.cursive{
+  font-family: cursive;
+}
+.fantasy{
+  font-family: fantasy;
+}
+.Audiowide{
+  font-family: Audiowide;
+} 
+.Sofia{
+  font-family: Sofia;
+} 
+.Trirong{
+  font-family: Trirong;
+}
+.x-small{
+  font-size: x-small;
+}
+.small{
+  font-size: small;
+}
+.medium{
+  font-size: medium;
+}
+.large{
+  font-size: large;
+}
+.x-large{
+  font-size: x-large;
+}

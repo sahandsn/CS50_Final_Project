@@ -8,20 +8,21 @@
 <form action="/entry" method="get">
     <button type="submit">New Entry</button>
 </form>
-<table>
+<table class="table">
     <thead>
         <tr>
             <th>Time</th>
             <th>Head</th>
             <th>Body</th>
+            <th>More</th>
         </tr>
     </thead>
     <tbody>
         {% for dict in list%}
             <tr class="rows" class="{{dict['tag']}}">
-                <td>{{dict['time']}}</td>
-                <td>{{dict['head']}}</td>
-                <td>{{dict['body']}}</td>
+                <td class="timebox"><div>{{dict['time']}}</div></td>
+                <td class="headbox"><div>{{dict['head']}}</div></td>
+                <td class="bodybox"><div>{{dict['body']}}</div></td>
 
 
                 <td class="dropdown" class="menu"><svg  xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-three-dots" viewBox="0 0 16 16">

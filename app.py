@@ -95,9 +95,9 @@ def register():
         except:
             return error("something went wrong.")
         
-        msg = Message("YourList", sender = 'noreply@demo.com', recipients=[email])
-        msg.body = "Welcome to your ultimate List app online!"
-        mail.send(msg)
+        # msg = Message("YourList", sender = 'noreply@demo.com', recipients=[email])
+        # msg.body = "Welcome to your ultimate List app online!"
+        # mail.send(msg)
         session["user_id"] = db.execute("SELECT * FROM users WHERE username = ?", request.form.get("username"))[0]['id']
         return redirect('/')
 
@@ -186,11 +186,11 @@ def entry():
         # insert the new entry in the notes table
         db.execute("INSERT INTO notes (user_id, head, body, tag) VALUES (?,?,?,?)", session["user_id"], request.form.get('head'), request.form.get('body'), request.form.get('tag'))
         email = db.execute("SELECT email FROM users WHERE id = ?", session["user_id"])
-        if email[0]['email'] == '':
-            return redirect('/')
-        msg = Message("YourList", sender = 'noreply@demo.com', recipients=[email[0]['email']])
-        msg.body = "An entry has been added."
-        mail.send(msg)
+        # if email[0]['email'] == '':
+        #     return redirect('/')
+        # msg = Message("YourList", sender = 'noreply@demo.com', recipients=[email[0]['email']])
+        # msg.body = "An entry has been added."
+        # mail.send(msg)
         return redirect('/')
     else:
         return render_template('entry.html')
@@ -219,12 +219,12 @@ def deleted():
     if check_password_hash(hash[0]['hash'] , request.form.get('password')) == True:
         id = request.form.get('delete')
         db.execute('DELETE FROM notes WHERE id = ?', id)
-        email = db.execute("SELECT email FROM users WHERE id = ?", session["user_id"])
-        if email[0]['email'] == '':
-            return redirect('/')
-        msg = Message("YourList", sender = 'noreply@demo.com', recipients=[email[0]['email']])
-        msg.body = "An entry has been deleted."
-        mail.send(msg)
+        # email = db.execute("SELECT email FROM users WHERE id = ?", session["user_id"])
+        # if email[0]['email'] == '':
+        #     return redirect('/')
+        # msg = Message("YourList", sender = 'noreply@demo.com', recipients=[email[0]['email']])
+        # msg.body = "An entry has been deleted."
+        # mail.send(msg)
         return redirect('/')
     else:
         return error("password was wrong.")
@@ -288,3 +288,18 @@ def changeEmail():
         return error("password was wrong.")
 
 
+fonts = ['sans-serif', "Audiowide", 'serif', "Sofia", 'monospace', 'cursive', 'fantasy', "Trirong"]
+background = ['aaaaaa', '107895', '0d3c55', '0d3c55', '000000', 'fd852e', 'ffffff', '83174b']
+foreground = ['000000', 'f1f3f4', 'f1f3f4', 'eed369', 'fd852e', '000000', '83174b', 'ffffff']
+size = ['x-small', 'small', 'medium', 'large', 'x-large']
+
+@app.route('/customize', methods=['get', 'post'])
+@login_required
+def customize():
+    if request.method == 'post':
+        return render_template('customize.html')
+    else:
+        return render_template('customize.html', fonts=fonts, background=background, foreground=foreground, size=size)
+
+
+        
