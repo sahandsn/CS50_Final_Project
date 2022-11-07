@@ -5,17 +5,21 @@
 {% endblock %}
 
 {% block main %}
-<form action="/customize" method="post">
-    <h2>Font Style:</h2>
+<form action="/customize" method="POST">
+    <h2>Style:</h2>
     {% for font in fonts%}
     <input type="radio" name="font" value="{{font}}"><label class="{{font}}">which font is better?</label><br>
     {% endfor %}
     <br>
-    <h2>Font Size:</h2>
+    <h2>Size:</h2>
     {% for size in size%}
     <input type="radio" name="size" value="{{size}}"><label class="{{size}}">how big/small do you like it?</label><br>
-    {% endfor %}
-
+    {% endfor %}<br>
+    <h2>Color:</h2>
+    {% for i in range(background| length)%}
+    <input type="radio" name="ground" value="{{i}}"><label class="--{{background[i]}} boxsize">TEXT</label><br>
+    {% endfor %}<br>
+    <button type="submit" class="btn btn-primary">save</button>
 </form>
 
 {% endblock %}

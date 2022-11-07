@@ -78,3 +78,53 @@ li {
 .x-large{
   font-size: x-large;
 }
+
+.boxsize{
+  width: 50px;
+  height: 50px; 
+  text-align: center;
+  vertical-align: middle;
+  line-height: 50px;
+  margin: 5px;
+}
+
+.--ffffff{
+  background-color: #ffffff;
+  color: #000000;
+}
+.--aaaaaa{
+  background-color: #aaaaaa;
+  color: #000000;
+} 
+.--107895{
+  background-color: #107895;
+  color: #f1f3f4;
+} 
+.--0d3c56{
+  background-color: #0d3c55;
+  color: #f1f3f4;
+} 
+.--0d3c55{
+  background-color: #0d3c55;
+  color: #eed369;
+} 
+.--000000{
+  background-color: #000000;
+  color: #fd852e;
+}
+.--fd852e{
+  background-color: #fd852e;
+  color: #000000;
+}
+.--fffffe{
+  background-color: #fffffe;
+  color: #83174b;
+} 
+.--83174b{
+  background-color: #83174b;
+  color: #ffffff;
+}
+
+a{
+  text-decoration: none;
+}

@@ -32,6 +32,13 @@ app.config["MAIL_USERNAME"] = "YourListsAndNotesApp@gmail.com"
 
 mail = Mail(app)
 
+
+fonts = ['sans-serif', "Audiowide", 'serif', "Sofia", 'monospace', 'cursive', 'fantasy', "Trirong"]
+background = ['ffffff', 'aaaaaa', '107895', 'fffffe', '0d3c56','fd852e', '0d3c55', '000000', '83174b']
+foreground = ['000000', '000000', 'f1f3f4', '83174b', 'f1f3f4','000000', 'eed369', 'fd852e', 'ffffff']
+size = ['x-small', 'small', 'medium', 'large', 'x-large']
+
+
 # Config login decorator
 def login_required(f):
    """
@@ -45,13 +52,51 @@ def login_required(f):
        return f(*args, **kwargs)
    return decorated_function
 
+
+# add an HTML tag
+def add_tags(tag, word):
+	return "<%s>%s</%s>" % (tag, word, tag)
+
+
+# continue adding an HTML tag
+def style():
+    try:
+        customize = db.execute("SELECT font, size, background, foreground FROM customize WHERE user_id = ?", session['user_id'])[0]
+    except:
+        customize = {'font': "sans-serif", 'size': "medium", 'background': "ffffff", 'foreground': "000000"}
+    font = customize['font']
+    if font not in fonts:
+        return error('font not found')
+    size = customize['size']
+    if size not in size:
+        return error('font size not found')
+    back = customize['background']
+    if back not in background:
+        return error('background color not found')
+    fore = customize['foreground']
+    if fore not in foreground:
+        return error('text color not found')
+
+    fontS = "font-family: {}".format(font)
+    sizeS = "font-size: {}".format(size)
+    backS = "background-color: #{}".format(back)
+    foreS = "color: #{}".format(fore)
+    list = add_tags('style', "*[{}; {}; {}; {};]".format(fontS, sizeS, backS, foreS))
+    lists = list.replace('[', '{', 1)
+    lists = lists.replace(']', '}', 1)
+
+    return lists
+
+
 # Configure CS50 Library to use SQLite database
 db = SQL("sqlite:///tables.db")
+
 
 # Different routes
 @app.route("/error")
 def error(message, code=400):
-    return render_template('error.html', message=message), code
+    customize = style()
+    return render_template('error.html', message=message, customize=customize), code
 
 
 @app.route("/register", methods=["GET", "POST"])
@@ -95,10 +140,17 @@ def register():
         except:
             return error("something went wrong.")
         
-        # msg = Message("YourList", sender = 'noreply@demo.com', recipients=[email])
-        # msg.body = "Welcome to your ultimate List app online!"
-        # mail.send(msg)
         session["user_id"] = db.execute("SELECT * FROM users WHERE username = ?", request.form.get("username"))[0]['id']
+
+        # save the initial customizing
+        db.execute('INSERT INTO customize (font, size, background, foreground, user_id) VALUES (?,?,?,?,?)', 'sans-serif', 'medium', 'ffffff', '000000', session['user_id'])
+
+        msg = Message("YourList", sender = 'noreply@demo.com', recipients=[email])
+        msg.body = "Welcome to your ultimate List app online!"
+        try:
+            mail.send(msg)
+        except:
+            return redirect('/')
         return redirect('/')
 
     if request.method == 'GET':
@@ -155,6 +207,8 @@ def logout():
 @app.route("/")
 @login_required
 def index():
+    # get this user's customization
+    customize = style()
     # get this user's entries and 
     list = db.execute('SELECT * FROM notes WHERE user_id = ? ORDER BY time DESC', session['user_id'])
     # sort them in time order: urgent->entry->done
@@ -173,7 +227,7 @@ def index():
     lists[len(lists):] = entries
     lists[len(lists):] = used
 
-    return render_template('index.html', list=lists)
+    return render_template('index.html', list=lists, customize=customize)
 
 
 @app.route('/entry', methods=['POST', 'GET'])
@@ -186,30 +240,34 @@ def entry():
         # insert the new entry in the notes table
         db.execute("INSERT INTO notes (user_id, head, body, tag) VALUES (?,?,?,?)", session["user_id"], request.form.get('head'), request.form.get('body'), request.form.get('tag'))
         email = db.execute("SELECT email FROM users WHERE id = ?", session["user_id"])
-        # if email[0]['email'] == '':
-        #     return redirect('/')
-        # msg = Message("YourList", sender = 'noreply@demo.com', recipients=[email[0]['email']])
-        # msg.body = "An entry has been added."
-        # mail.send(msg)
+        if email[0]['email'] == '':
+            return redirect('/')
+        msg = Message("YourList", sender = 'noreply@demo.com', recipients=[email[0]['email']])
+        msg.body = "An entry has been added."
+        try:
+            mail.send(msg)
+        except:
+            return redirect('/')
         return redirect('/')
     else:
-        return render_template('entry.html')
+        customize = style()
+        return render_template('entry.html', customize=customize)
 
 
 @app.route('/delete', methods=['POST'])
 @login_required
 def delete():
-
+    customize = style()
     list = db.execute('SELECT * FROM notes WHERE id = ?', request.form.get('delete')) 
-    return render_template('delete.html', list=list)
+    return render_template('delete.html', list=list, customize=customize)
 
 
 @app.route('/validate deletion', methods=['post'])
 @login_required
 def validate():
-
+    customize = style()
     id = request.form.get('delete')
-    return render_template('validate.html', id=id)
+    return render_template('validate.html', id=id, customize=customize)
     
     
 @app.route('/deleted', methods=['post'])
@@ -219,12 +277,15 @@ def deleted():
     if check_password_hash(hash[0]['hash'] , request.form.get('password')) == True:
         id = request.form.get('delete')
         db.execute('DELETE FROM notes WHERE id = ?', id)
-        # email = db.execute("SELECT email FROM users WHERE id = ?", session["user_id"])
-        # if email[0]['email'] == '':
-        #     return redirect('/')
-        # msg = Message("YourList", sender = 'noreply@demo.com', recipients=[email[0]['email']])
-        # msg.body = "An entry has been deleted."
-        # mail.send(msg)
+        email = db.execute("SELECT email FROM users WHERE id = ?", session["user_id"])
+        if email[0]['email'] == '':
+            return redirect('/')
+        msg = Message("YourList", sender = 'noreply@demo.com', recipients=[email[0]['email']])
+        msg.body = "An entry has been deleted."
+        try:
+            mail.send(msg)
+        except:
+            return redirect('/')
         return redirect('/')
     else:
         return error("password was wrong.")
@@ -257,17 +318,21 @@ def entrytag():
 @app.route("/email")
 @login_required
 def email():
-    return render_template("email.html")
+    customize = style()
+    return render_template("email.html", customize=customize)
 
 
 @app.route('/validate email', methods=['post'])
 @login_required
 def validateEmail():
+    customize = style()
     old = request.form.get("previousEmail")
     new = request.form.get("newEmail")
+    if new == "":
+        return error("enter new email.")
     check = db.execute("SELECT email FROM users WHERE id = ?", session['user_id'])[0]['email']
     if old == check:
-        return render_template("validateEmail.html", old=old, new=new)
+        return render_template("validateEmail.html", old=old, new=new, customize=customize)
     else:
         return error("This is not your current email address.")
 
@@ -288,18 +353,43 @@ def changeEmail():
         return error("password was wrong.")
 
 
-fonts = ['sans-serif', "Audiowide", 'serif', "Sofia", 'monospace', 'cursive', 'fantasy', "Trirong"]
-background = ['aaaaaa', '107895', '0d3c55', '0d3c55', '000000', 'fd852e', 'ffffff', '83174b']
-foreground = ['000000', 'f1f3f4', 'f1f3f4', 'eed369', 'fd852e', '000000', '83174b', 'ffffff']
-size = ['x-small', 'small', 'medium', 'large', 'x-large']
-
-@app.route('/customize', methods=['get', 'post'])
+@app.route('/customize', methods=['POST', 'GET'])
 @login_required
 def customize():
-    if request.method == 'post':
-        return render_template('customize.html')
+    if request.method == 'POST':
+        saved = db.execute("SELECT * FROM customize WHERE user_id = ?", session["user_id"])[0]
+
+        font = request.form.get('font')
+        sizing = request.form.get("size")
+        index = request.form.get('ground')
+
+        if font == None:
+            font = saved['font']
+
+        if sizing == None:
+            sizing = saved['size']
+            
+        if index == None:
+            i = 0
+            for x in background:
+                if x == saved['background']:
+                    index = i
+                i += 1
+       
+        if font not in fonts:
+            return error('font not found')
+        if sizing not in size:
+            return error('font size not found')
+        if int(index) not in range(len(background)):
+            return error('background/text color not found')
+
+
+            
+        db.execute("UPDATE customize SET (font, size, background, foreground) = (?, ?, ?, ?) WHERE user_id = ?", font, sizing, background[int(index)], foreground[int(index)], session["user_id"])
+
+        return redirect("/")
     else:
-        return render_template('customize.html', fonts=fonts, background=background, foreground=foreground, size=size)
+        customize = style()
+        return render_template('customize.html', fonts=fonts, background=background, foreground=foreground, size=size, customize=customize)
 
 
-        

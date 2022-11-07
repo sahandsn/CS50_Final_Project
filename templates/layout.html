@@ -15,6 +15,10 @@
         <link rel="stylesheet" href="/static/css/style.css">
         <!--use google fonts-->
         <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Audiowide|Sofia|Trirong">
+        {% if session["user_id"] %}
+            {{customize | safe}}               
+        {% endif %}
+
         
         <title>YourList: {% block title %}{% endblock %}</title>
     </head>
@@ -30,6 +34,7 @@
                             <li><a href="/logout">Log out</a></li>
                             <li><a href="/email">Email</a></li>
                             <li><a href="/customize">Customize</a></li>
+
                         
                     {% else %}
                         
