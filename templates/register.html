@@ -5,7 +5,8 @@
 {% endblock %}
 
 {% block main %}
-    <form action="/register" method="post">
+<br>
+    <form action="/register" method="post" class="item">
         <div >
             <input autocomplete="off" autofocus name="username" placeholder="Username" type="text" required>
         </div>
@@ -18,6 +19,8 @@
         <div >
             <input id="email" name="email" placeholder="Email" type="email" autocomplete="off" required>
         </div>
+        <br>
+        
         <button type="submit" class="btn btn-primary">Register</button>
     </form>
 {% endblock %}

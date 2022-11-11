@@ -5,21 +5,44 @@
 {% endblock %}
 
 {% block main %}
-<form action="/customize" method="POST">
-    <h2>Style:</h2>
-    {% for font in fonts%}
-    <input type="radio" name="font" value="{{font}}"><label class="{{font}}">which font is better?</label><br>
-    {% endfor %}
+
+<table class="table" style="width: 99%;">
+<form action="/customize" method="POST" class="item">
+    <thead>
+        <tr>
+            <th style="width: 35%"><h2>Style</h2></th>
+            <th style="width: 35%"><h2>Size</h2></th>
+            <th style="width: 30%"><h2>Color</h2></th>
+        </tr>
+    </thead>
+
+    <tbody>
+        <tr style="height: 50px;">
+            <td class="dont">{% for font in fonts%}
+                <input type="radio" name="font" value="{{font}}"><label class="{{font}}">which font is better?</label><br>
+                {% endfor %}
+            </td>
+            <td class="dont">
+                {% for size in size%}
+                <input type="radio" name="size" value="{{size}}"><label class="{{size}}">how big/small do you like it?</label><br>
+                {% endfor %}
+            </td>
+            <td class="dont">
+                {% for i in range(background| length)%}
+                <input type="radio" name="ground" value="{{i}}"><label class="--{{background[i]}} boxsize">TEXT</label><br>
+                {% endfor %}
+            </td>
+        </tr>
+    </tbody>
+    
     <br>
-    <h2>Size:</h2>
-    {% for size in size%}
-    <input type="radio" name="size" value="{{size}}"><label class="{{size}}">how big/small do you like it?</label><br>
-    {% endfor %}<br>
-    <h2>Color:</h2>
-    {% for i in range(background| length)%}
-    <input type="radio" name="ground" value="{{i}}"><label class="--{{background[i]}} boxsize">TEXT</label><br>
-    {% endfor %}<br>
-    <button type="submit" class="btn btn-primary">save</button>
+<div class="item">
+    <button type="submit">save</button>
+</div>
+<br>
 </form>
+</table>
+
+<br>
 
 {% endblock %}

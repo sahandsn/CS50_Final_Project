@@ -5,27 +5,28 @@
 {% endblock %}
 
 {% block main %}
-<form action="/entry" method="get">
-    <button type="submit">New Entry</button>
-</form>
-<table class="table">
+<br>
+<form action="/entry" method="get" class="item">
+    <button type="submit" class="d-grid gap-2 col-6 mx-auto">New Entry</button>
+</form><br>
+<table class="table" style="width: 99%;">
     <thead>
         <tr>
-            <th>Time</th>
-            <th>Head</th>
-            <th>Body</th>
-            <th>More</th>
+            <th style="width: 15%">Time</th>
+            <th style="width: 25%">Head</th>
+            <th style="width: 50%">Body</th>
+            <th style="width: 10%">More</th>
         </tr>
     </thead>
     <tbody>
         {% for dict in list%}
-            <tr class="rows" class="{{dict['tag']}}">
-                <td class="timebox"><div>{{dict['time']}}</div></td>
-                <td class="headbox"><div>{{dict['head']}}</div></td>
-                <td class="bodybox"><div>{{dict['body']}}</div></td>
+            <tr class="rows" style="height: 50px;">
+                <td class="dont"><div>{{dict['time']}}</div></td>
+                <td id="{{dict['tag']}}" class="dont"><div>{{dict['head']}}</div></td>
+                <td class="dont"><div>{{dict['body']}}</div></td>
 
 
-                <td class="dropdown" class="menu"><svg  xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-three-dots" viewBox="0 0 16 16">
+                <td class="dropdown" class="menu" ><svg  xmlns="http://www.w3.org/2000/svg" height="16" width="16" fill="currentColor" class="bi bi-three-dots" viewBox="0 0 16 16">
                     <path d="M3 9.5a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3zm5 0a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3zm5 0a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3z"/>
                   </svg> <div class="dropdown-content">
                     <form action="/urgentTag" method="POST"><button type="submit" name='urgent' value="{{dict['id']}}">Urgent</button></form>

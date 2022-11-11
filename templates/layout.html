@@ -23,27 +23,29 @@
         <title>YourList: {% block title %}{% endblock %}</title>
     </head>
     <body>
-            <div>
-                <div>
+            <div class="item">
+                
                     
                     <ul>
-                        <li><a href="/"><img src="/static/icon.png"height="100" width="100"></a></li>
+                        <li ><a href="/"><img src="/static/icon.png"height="100" width="100" ></a></li>
                     
                     {% if session["user_id"] %}
-                        
-                            <li><a href="/logout">Log out</a></li>
-                            <li><a href="/email">Email</a></li>
-                            <li><a href="/customize">Customize</a></li>
+                            <br>
+                            
+                            <li ><a href="/email" >Account</a></li><br>
+                            <li ><a href="/customize" >Customize</a></li><br>
+                            <li ><a href="/logout" >Log out</a></li><br>
 
                         
                     {% else %}
-                        
-                            <li><a href="/register">Register</a></li>
-                            <li><a href="/login">Log In</a></li>
+                            <br>
+                            <li ><a href="/login" >Log In</a></li><br>
+                            <li ><a href="/register" >Register</a></li><br>
+                            
                         
                     {% endif %}
                     </ul>
-                </div>
+                
             </div>
         <main>
             {% block main %}{% endblock %}

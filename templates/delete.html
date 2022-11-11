@@ -5,16 +5,17 @@
 {% endblock %}
 
 {% block main %}
-<h1>Warning!</h1>
-<h3>once deleted, there is no going back.</h3>
+<br>
+<h1 class="item">Warning</h1>
+<h4 class="item">once deleted, there is no going back</h4>
 <br>
 {% for dict in list%}
-<h3>Are you sure you want to delete {{dict['head']}}?</h3>
-<form action="/validate deletion" method="post"><button type="submit" name='delete' value="{{dict['id']}}" class="btn btn-primary">Yes</button></form>
-<form action="/" ><button type="submit" class="btn btn-danger">No</button></form>
+<h3 class="item">Are you sure you want to delete {{dict['head']}}?</h3>
+<form action="/validate deletion" method="post" class="item"><button type="submit" name='delete'  value="{{dict['id']}}">Yes</button></form>
+<form action="/" class="item"><button type="submit" >No</button></form>
 
 
-<p>{{dict['time']}}</p>
-<p>{{dict['body']}}</p>
+<p class="item">{{dict['time']}}</p>
+<p class="item">{{dict['body']}}</p>
 {% endfor %}
 {% endblock %}

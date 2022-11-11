@@ -80,7 +80,7 @@ li {
 }
 
 .boxsize{
-  width: 50px;
+  width: 90px;
   height: 50px; 
   text-align: center;
   vertical-align: middle;
@@ -128,3 +128,37 @@ li {
 a{
   text-decoration: none;
 }
+
+.item{
+  text-align: center;
+}
+
+#urgent{
+
+  background-color: red;
+}
+
+#entry{
+
+  background-color: blue;
+}
+
+#done{
+
+  background-color: lightgray;
+}
+
+dl, ol, ul {
+  margin-top: 0;
+  margin-bottom: 0rem;
+}
+table, tr, td, #urgent{
+  border: none;
+}
+table{
+  table-layout: fixed;
+}
+td.dont{
+  overflow:auto;
+}
+

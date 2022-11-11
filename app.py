@@ -1,18 +1,16 @@
 import os
 
 from cs50 import SQL
-from flask import Flask, flash, redirect, render_template, request, session
+from flask import Flask, redirect, render_template, request, session
 from flask_session import Session
-from tempfile import mkdtemp
 from werkzeug.security import check_password_hash, generate_password_hash
-from itertools import zip_longest
-from flask_login import login_required, current_user
+from flask_login import login_required
 from functools import wraps
 from flask_mail import Mail, Message
 
 # Configure application
 app = Flask(__name__)
-app.secret_key = '*,sanaei#9,#sahand%,!is@,here$?/,2001;'
+app.secret_key = '*,wayne#9,#bruce%,!is@,here$?/,2001;'
 
 # Ensure templates are auto-reloaded
 app.config["TEMPLATES_AUTO_RELOAD"] = True
@@ -31,7 +29,6 @@ app.config["MAIL_USE_SSL"] = True
 app.config["MAIL_USERNAME"] = "YourListsAndNotesApp@gmail.com"
 
 mail = Mail(app)
-
 
 fonts = ['sans-serif', "Audiowide", 'serif', "Sofia", 'monospace', 'cursive', 'fantasy', "Trirong"]
 background = ['ffffff', 'aaaaaa', '107895', 'fffffe', '0d3c56','fd852e', '0d3c55', '000000', '83174b']
@@ -121,7 +118,7 @@ def register():
         emails = db.execute("SELECT email FROM users")
         for dict in emails:
             if dict['email'] == email:
-                return error("use a new email.")
+                return error("use a new email")
         
         # check if the username is taken
         names = db.execute('SELECT username FROM users')
@@ -138,7 +135,7 @@ def register():
             # add user to the database
             db.execute('INSERT INTO users (username, hash, email) VALUES(?, ?, ?)', username, hashed, email)
         except:
-            return error("something went wrong.")
+            return error("something went wrong")
         
         session["user_id"] = db.execute("SELECT * FROM users WHERE username = ?", request.form.get("username"))[0]['id']
 
@@ -180,7 +177,7 @@ def login():
 
         # Ensure username exists and password is correct
         if len(rows) != 1 or not check_password_hash(rows[0]["hash"], request.form.get("password")):
-            return error("user not found.")
+            return error("user not found")
 
         # Remember which user has logged in
         session["user_id"] = rows[0]["id"]
@@ -288,7 +285,7 @@ def deleted():
             return redirect('/')
         return redirect('/')
     else:
-        return error("password was wrong.")
+        return error("password was wrong")
 
 
 @app.route('/urgentTag', methods=['post'])
@@ -329,12 +326,12 @@ def validateEmail():
     old = request.form.get("previousEmail")
     new = request.form.get("newEmail")
     if new == "":
-        return error("enter new email.")
+        return error("enter new email")
     check = db.execute("SELECT email FROM users WHERE id = ?", session['user_id'])[0]['email']
     if old == check:
         return render_template("validateEmail.html", old=old, new=new, customize=customize)
     else:
-        return error("This is not your current email address.")
+        return error("This is not your current email address")
 
 
 @app.route('/email change', methods=['post'])
@@ -342,15 +339,14 @@ def validateEmail():
 def changeEmail():
     hash = db.execute('SELECT hash FROM users WHERE id = ?', session["user_id"])
     if check_password_hash(hash[0]['hash'] , request.form.get('password')) == True:
-        old = request.form.get("old")
         new = request.form.get("new")
         try:
             db.execute("UPDATE users SET email = ? WHERE id = ?", new, session['user_id'])
         except:
-            return error("something went wrong.")
+            return error("something went wrong")
         return redirect('/')
     else:
-        return error("password was wrong.")
+        return error("password was wrong")
 
 
 @app.route('/customize', methods=['POST', 'GET'])
@@ -392,4 +388,25 @@ def customize():
         customize = style()
         return render_template('customize.html', fonts=fonts, background=background, foreground=foreground, size=size, customize=customize)
 
+
+@app.route("/validate delete", methods=['post'])
+@login_required
+def accountValidate():
+    customize = style()
+    return render_template("validateDelete.html", customize=customize)
+
+
+@app.route('/delete account', methods=['post'])
+@login_required
+def deleteAccount():
+    hash = db.execute('SELECT hash FROM users WHERE id = ?', session["user_id"])
+    if check_password_hash(hash[0]['hash'] , request.form.get('password')) == True:
+        # cannot delete the user first :
+        # FOREIGN KEY constraint failed
+        db.execute("DELETE FROM notes WHERE user_id = ?", session['user_id'])
+        db.execute("DELETE FROM customize WHERE user_id = ?", session['user_id'])
+        db.execute("DELETE FROM users WHERE id = ?", session['user_id'])
+        return redirect('/logout')
+    else:
+        return error("password was wrong")
 

@@ -5,11 +5,11 @@
 {% endblock %}
 
 {% block main %}
-
-<form action="/entry" method="post">
-    <input name="head" placeholder="Head" type="text" autofocus autocomplete="off">
-    <input name="body" placeholder="Body" type="text" autocomplete="off">
-    <br>
+<br>
+<form action="/entry" method="post" class="item">
+    <input name="head" placeholder="Head" type="text" autofocus autocomplete="off"><br><br>
+    <input name="body" placeholder="Body" type="text" autocomplete="off" class="d-grid gap-2 col-6 mx-auto">
+    <br><br>
     is this note urgent?
     <br>
     <input type="radio" id="yes" name="tag" value="urgent">
@@ -17,8 +17,8 @@
     <br>
     <input type="radio" id="no" name="tag" value="entry">
     <label for="no">No</label>
-    <br>
-    <button type="submit" class="btn btn-primary">save</button>
+    <br><br>
+    <button type="submit">save</button>
 
 </form>
 

@@ -1,0 +1,22 @@
+{% extends 'layout.html' %}
+
+{% block title %}
+    Validate
+{% endblock %}
+
+{% block main %}
+<br>
+<h1 class="item">Warning</h1>
+<h4 class="item">once deleted, there is no going back.</h4>
+<br>
+<div class="item">
+    <br>
+    <h1> Prove it is you</h1>
+    <form action="/delete account" method="post">
+        <input type="password" name="password" placeholder="Password" autocomplete="off" autofocus>
+        <br>
+        <br>
+        <button type="submit">It is me</button>
+     </form>
+    </div>
+    {% endblock %}

@@ -5,10 +5,19 @@
 {% endblock %}
 
 {% block main %}
-    <h2>Chang your email address.</h2>
+<div class="item">
+    <h1>Change your email address</h1>
     <form action="/validate email" method="post">
+        <br>
         <input type="email" autofocus autocomplete="off" name="previousEmail" placeholder="Current Email">
-        <input type="email" autofocus autocomplete="off" name="newEmail" placeholder="New Email">
-        <button type="submt" class="btn btn-primary">Change</button>
+        <input type="email" autofocus autocomplete="off" name="newEmail" placeholder="New Email"><br>
+        <button type="submt">Change</button>
     </form>
+    <br>
+    <h1>Delete your account</h1>
+    <form action="/validate delete" method="post">
+        <br>
+        <button type="submit">Delete Account</button>
+    </form>
+</div>
 {% endblock %}
