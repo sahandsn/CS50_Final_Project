@@ -9,3 +9,6 @@ Whith this simple application you can:
 5. receiving an email after registration, creating and deleting notes
 6. change email address
 7. delete your account 
+
+Please check out my project, whic is hosted on pythonanywhere.com:
+http://yourlistsandnotesapp.pythonanywhere.com/
