@@ -1,6 +1,6 @@
 # Harvard's CS50
 This was without a doubt the most interesting course that I have taken in my life. It halped me realize that programming is accessible to anyone, regardless of their educational background.
-![certification] (./certification/cs50x.png)
+![certification] (certification/CS50x.png)
 
 ## CS50_Final_Project: YourList
 
