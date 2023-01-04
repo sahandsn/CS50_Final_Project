@@ -1,4 +1,8 @@
-# CS50_Final_Project: YourList
+# Harvard's CS50
+This was without a doubt the most interesting course that I have taken in my life. It halped me realize that programming is accessible to anyone, regardless of their educational background.
+![certification] (./certification/cs50x.png)
+
+## CS50_Final_Project: YourList
 
 This is my final project for Harvard’s CS50 introduction to computers and the art of programming. 
 It is a flask web application in which you can save notes and customize your account.
@@ -28,13 +32,13 @@ App.py is the main file that contains the python code, which is primarily the ro
 Tables.db is the sqlite3 database that has three tables. users table which stores user id, password hash, and email. notes table which stores user id, head, body, time stamp, and tag. custumize table which contains user id, font, size, background, and foreground used in the CSS file.
 
 
-# YouTube Video
+## YouTube Video
 
 CS50's instructions include uploading a short video demonstrating our final project.
 Here is my video explaining the application: https://youtu.be/Is6WlKeyE4o
 
 
-# About CS50
+## About CS50
 
 Introduction to the intellectual enterprises of computer science and the art of programming. This course teaches students how to think algorithmically and solve problems efficiently. Topics include abstraction, algorithms, data structures, encapsulation, resource management, security, software engineering, and web programming. Languages include C, Python, and SQL plus HTML, CSS, and JavaScript. Problem sets inspired by the arts, humanities, social sciences, and sciences. Course culminates in a final project. Designed for concentrators and non-concentrators alike, with or without prior programming experience. Two thirds of CS50 students have never taken CS before. Among the overarching goals of this course are to inspire students to explore unfamiliar waters, without fear of failure, create an intensive, shared experience, accessible to all students, and build community among students.
 
